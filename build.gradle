@@ -1,0 +1,57 @@
+plugins {
+    id 'application'
+    id 'org.openjfx.javafxplugin' version '0.1.0'
+}
+
+group = 'kr.gumi.bis'
+version = '0.1.0'
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
+application {
+    mainClass = 'app.DesktopApp'
+}
+
+javafx {
+    version = '23.0.2'
+    modules = ['javafx.controls']
+}
+
+tasks.named('run', JavaExec).configure {
+    standardInput = System.in
+}
+
+tasks.withType(JavaExec).configureEach {
+    systemProperty 'file.encoding', 'UTF-8'
+    jvmArgs '-Dsun.stdout.encoding=UTF-8', '-Dsun.stderr.encoding=UTF-8'
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+    options.release = 17
+}
+
+tasks.register('runSmoke', JavaExec) {
+    group = 'verification'
+    description = 'Runs lightweight parser and model smoke checks without external dependencies.'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'app.SmokeTest'
+}
+
+tasks.register('runConsole', JavaExec) {
+    group = 'application'
+    description = 'Runs the original console MVP.'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'app.ConsoleApp'
+    standardInput = System.in
+}
+
+tasks.register('runHotPlaceProbe', JavaExec) {
+    group = 'verification'
+    description = 'Checks Naver and Google hot place API calls without launching the JavaFX UI.'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'app.HotPlaceApiProbe'
+}
